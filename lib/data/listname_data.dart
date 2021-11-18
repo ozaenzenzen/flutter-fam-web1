@@ -17,7 +17,7 @@ class ListNameData extends ChangeNotifier{
         ListNameModel(
           id: i.toString(),
           name: mockName('male'),
-          desc: mockString(6,'a#'),
+          desc: mockString(20,'a#'),
           birthDate: mockDate(DateTime(1995), DateTime(2002))
         ),
       );
