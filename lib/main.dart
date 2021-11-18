@@ -1,8 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fam_web1/app_route_path.dart';
+import 'package:flutter_fam_web1/data/listnames_data.dart';
 import 'package:flutter_fam_web1/mainpage.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +20,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      builder: () {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (ctx) => ListNameData.listNameData,
+        ),
+      ],
+      child: ScreenUtilInit(builder: () {
         return MaterialApp.router(
           title: 'Fam Web Training',
           debugShowCheckedModeBanner: false,
@@ -28,7 +35,7 @@ class _MyAppState extends State<MyApp> {
           routerDelegate: AppRouterDelegate(),
           // home: const MainPage(),
         );
-      }
+      }),
     );
   }
 }
