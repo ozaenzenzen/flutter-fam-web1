@@ -24,6 +24,7 @@ class _DetailPageState extends State<DetailPage> {
     var formattedDate = DateFormat.yMMMd().format(widget.data.birthDate!);
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.pink[700],
         title: Text(
           "${widget.data.name} Details",
           style: GoogleFonts.poppins(
