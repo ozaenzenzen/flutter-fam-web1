@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fam_web1/app_route_path.dart';
 import 'package:flutter_fam_web1/data/listname_data.dart';
 import 'package:flutter_fam_web1/mainpage.dart';
+import 'package:flutter_fam_web1/scroll_behavior.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
@@ -26,26 +27,20 @@ class _MyAppState extends State<MyApp> {
           create: (ctx) => ListNameData.listNameData,
         ),
       ],
-      child: ScreenUtilInit(builder: () {
-        return MaterialApp.router(
-          title: 'Fam Web Training',
-          debugShowCheckedModeBanner: false,
-          scrollBehavior: MyCustomScrollBehavior(),
-          routeInformationParser: AppRouteInformationParser(),
-          routerDelegate: AppRouterDelegate(),
-          // home: const MainPage(),
-        );
-      }),
+      child: ScreenUtilInit(
+        builder: () {
+          return MaterialApp.router(
+            title: 'Fam Web Training',
+            debugShowCheckedModeBanner: false,
+            scrollBehavior: MyCustomScrollBehavior(),
+            routeInformationParser: AppRouteInformationParser(),
+            routerDelegate: AppRouterDelegate(),
+            // home: const MainPage(),
+          );
+        },
+      ),
     );
   }
-}
-
-class MyCustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      };
 }
 
 class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
@@ -57,7 +52,8 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
     print("uri: $uri");
 
     // handle /
-    if (uri.pathSegments.isEmpty) {
+    if (uri.pathSegments == 0) {
+      print("masuk home");
       return AppRoutePath.home();
     }
 
@@ -65,9 +61,11 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
     else if (uri.pathSegments.length == 1) {
       final first = uri.pathSegments[0].toLowerCase();
       if (first == 'home') {
+        print("masuk home via /home");
         return AppRoutePath.home();
       }
       if (first == '404') {
+        print("masuk unknown");
         return AppRoutePath.unknown();
       }
     }
@@ -87,6 +85,7 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
 
     else {
       // handle 'unknown page'
+      print("masuk unknown");
       return AppRoutePath.unknown();
     }
     return AppRoutePath.unknown();
@@ -94,17 +93,34 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
 
   @override
   RouteInformation? restoreRouteInformation(AppRoutePath configuration) {
-    if (configuration.isUnknown)
+    print("restore route information: ${configuration.id}");
+    if (configuration.isUnknown) {
       return const RouteInformation(location: '/404');
-    if (configuration.isHome) return const RouteInformation(location: '/home');
+    }
+    if (configuration.isHome) {
+      return const RouteInformation(location: '/home');
+    }
+    if (configuration.isHome) {
+      return const RouteInformation(location: '/');
+    }
     return null;
   }
 }
 
 class AppRouterDelegate extends RouterDelegate<AppRoutePath>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppRoutePath> {
+  // @override
+  // GlobalKey<NavigatorState>? get navigatorKey => GlobalKey<NavigatorState>();
+
+  String? currentPage;
+
+  bool? isHome;
+  bool is404 = false;
+
   @override
-  GlobalKey<NavigatorState>? get navigatorKey => GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState>? navigatorKey;
+
+  AppRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void addListener(VoidCallback listener) {}
@@ -136,10 +152,28 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
   }
 
   @override
+  AppRoutePath? get currentConfiguration {
+    if (is404) {
+      return AppRoutePath.unknown();
+    }
+    return AppRoutePath.home();
+  }
+
+  @override
   void removeListener(VoidCallback listener) {}
 
   @override
   Future<void> setNewRoutePath(AppRoutePath configuration) async {
+    print("set new route path: ${configuration.id}");
+    currentPage = configuration.id;
+    if (configuration.isHome) {
+      isHome = true;
+      return;
+    }
+    if (configuration.isUnknown) {
+      is404 = true;
+      return;
+    }
     // throw UnimplementedError();
   }
 }
