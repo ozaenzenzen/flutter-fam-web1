@@ -92,7 +92,7 @@ class AppRouteInformationParser extends RouteInformationParser<AppRoutePath> {
 
   @override
   RouteInformation? restoreRouteInformation(AppRoutePath configuration) {
-    print("restore route information: ${configuration.id}");
+    print("restore route information: ${configuration.isHome}");
     if (configuration.isUnknown) {
       return const RouteInformation(location: '/404');
     }
@@ -163,7 +163,7 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath>
 
   @override
   Future<void> setNewRoutePath(AppRoutePath configuration) async {
-    print("set new route path: ${configuration.id}");
+    print("set new route path: ${configuration.isHome}");
     currentPage = configuration.id;
     if (configuration.isHome) {
       isHome = true;
